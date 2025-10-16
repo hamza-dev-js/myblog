@@ -1,0 +1,120 @@
+body {
+  margin: 0;
+  padding-top: 70px; /* لتفادي Navbar الثابت */
+  font-family: 'Poppins', sans-serif;
+  background-color: #f7f9fc;
+  color: #333;
+}
+
+.container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-radius: 12px;
+}
+
+h1, h2, h3 {
+  color: #222;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  outline: none;
+  transition: border 0.2s;
+}
+
+input:focus, textarea:focus {
+  border: 1px solid #007bff;
+}
+
+button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.2s;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+.post-card {
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  background: white;
+}
+
+.post-card h2 {
+  margin: 0 0 10px 0;
+}
+
+.post-card small {
+  color: #555;
+}
+
+/* Loading */
+.loading {
+  text-align: center;
+  font-size: 18px;
+  color: #007bff;
+  margin-top: 50px;
+}
+
+/* Dark Mode */
+body.dark-mode {
+  background-color: #121212;
+  color: #f0f0f0;
+}
+
+body.dark-mode .container, 
+body.dark-mode .post-card {
+  background: #1e1e1e;
+  box-shadow: 0 2px 8px rgba(255,255,255,0.1);
+}
+
+body.dark-mode input, 
+body.dark-mode textarea {
+  background: #2c2c2c;
+  color: #f0f0f0;
+  border: 1px solid #555;
+}
+
+body.dark-mode button {
+  background: #bb86fc;
+}
+
+body.dark-mode button:hover {
+  background: #9f6efc;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    width: 90%;
+    padding: 15px;
+  }
+
+  h1 {
+    font-size: 22px;
+  }
+
+  button {
+    width: 100%;
+  }
+
+  input, textarea {
+    font-size: 14px;
+  }
+}
