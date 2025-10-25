@@ -3,24 +3,24 @@ const router = express.Router();
 const db = require("../db");
 const jwt = require("jsonwebtoken");
 
-// ✅ دالة للتحقق من التوكن
+// ✅ Function to verify token
 function verifyToken(req, res, next) {
   const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json({ message: "لا يوجد توكن" });
+  if (!token) return res.status(401).json({ message: "No token provided" });
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ message: "توكن غير صالح" });
+    if (err) return res.status(403).json({ message: "Invalid token" });
     req.user = user;
     next();
   });
 }
 
-// 🟢 إنشاء مقال جديد
+// 🟢 Create a new post
 router.post("/", verifyToken, async (req, res) => {
   const { title, content } = req.body;
 
   if (!title || !content)
-    return res.status(400).json({ message: "الرجاء إدخال العنوان والمحتوى" });
+    return res.status(400).json({ message: "Please provide title and content" });
 
   try {
     await db
@@ -31,14 +31,14 @@ router.post("/", verifyToken, async (req, res) => {
         content,
       ]);
 
-    res.status(201).json({ message: "تم نشر المقال بنجاح ✅" });
+    res.status(201).json({ message: "Post created successfully ✅" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "حدث خطأ أثناء إنشاء المقال" });
+    res.status(500).json({ message: "Error occurred while creating the post" });
   }
 });
 
-// 🟡 جلب كل المقالات
+// 🟡 Get all posts
 router.get("/", async (req, res) => {
   try {
     const [posts] = await db
@@ -49,11 +49,11 @@ router.get("/", async (req, res) => {
 
     res.json(posts);
   } catch (error) {
-    res.status(500).json({ message: "حدث خطأ أثناء جلب المقالات" });
+    res.status(500).json({ message: "Error occurred while fetching posts" });
   }
 });
 
-// 🔵 جلب مقال معيّن
+// 🔵 Get a specific post
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -65,15 +65,15 @@ router.get("/:id", async (req, res) => {
       );
 
     if (post.length === 0)
-      return res.status(404).json({ message: "المقال غير موجود" });
+      return res.status(404).json({ message: "Post not found" });
 
     res.json(post[0]);
   } catch (error) {
-    res.status(500).json({ message: "حدث خطأ أثناء جلب المقال" });
+    res.status(500).json({ message: "Error occurred while fetching the post" });
   }
 });
 
-// 🔵 تعديل مقال
+// 🔵 Update a post
 router.put("/:id", verifyToken, async (req, res) => {
   const { id } = req.params;
   const { title, content } = req.body;
@@ -84,10 +84,10 @@ router.put("/:id", verifyToken, async (req, res) => {
       .query("SELECT * FROM posts WHERE id = ?", [id]);
 
     if (post.length === 0)
-      return res.status(404).json({ message: "المقال غير موجود" });
+      return res.status(404).json({ message: "Post not found" });
 
     if (post[0].user_id !== req.user.id)
-      return res.status(403).json({ message: "ليس لديك صلاحية التعديل" });
+      return res.status(403).json({ message: "You do not have permission to edit" });
 
     await db
       .promise()
@@ -97,13 +97,13 @@ router.put("/:id", verifyToken, async (req, res) => {
         id,
       ]);
 
-    res.json({ message: "تم تحديث المقال بنجاح ✅" });
+    res.json({ message: "Post updated successfully ✅" });
   } catch (error) {
-    res.status(500).json({ message: "حدث خطأ أثناء التعديل" });
+    res.status(500).json({ message: "Error occurred while updating" });
   }
 });
 
-// 🔴 حذف مقال
+// 🔴 Delete a post
 router.delete("/:id", verifyToken, async (req, res) => {
   const { id } = req.params;
 
@@ -113,16 +113,16 @@ router.delete("/:id", verifyToken, async (req, res) => {
       .query("SELECT * FROM posts WHERE id = ?", [id]);
 
     if (post.length === 0)
-      return res.status(404).json({ message: "المقال غير موجود" });
+      return res.status(404).json({ message: "Post not found" });
 
     if (post[0].user_id !== req.user.id)
-      return res.status(403).json({ message: "ليس لديك صلاحية الحذف" });
+      return res.status(403).json({ message: "You do not have permission to delete" });
 
     await db.promise().query("DELETE FROM posts WHERE id = ?", [id]);
 
-    res.json({ message: "تم حذف المقال بنجاح 🗑️" });
+    res.json({ message: "Post deleted successfully 🗑️" });
   } catch (error) {
-    res.status(500).json({ message: "حدث خطأ أثناء الحذف" });
+    res.status(500).json({ message: "Error occurred while deleting" });
   }
 });
 

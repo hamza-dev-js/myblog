@@ -3,23 +3,23 @@ const router = express.Router();
 const db = require("../db");
 const jwt = require("jsonwebtoken");
 
-// ✅ دالة للتحقق من التوكن
+// ✅ Function to verify token
 function verifyToken(req, res, next) {
   const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json({ message: "لا يوجد توكن" });
+  if (!token) return res.status(401).json({ message: "No token provided" });
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ message: "توكن غير صالح" });
+    if (err) return res.status(403).json({ message: "Invalid token" });
     req.user = user;
     next();
   });
 }
 
-// 🟢 إضافة تعليق
+// 🟢 Add a comment
 router.post("/", verifyToken, async (req, res) => {
   const { post_id, content } = req.body;
   if (!post_id || !content)
-    return res.status(400).json({ message: "الرجاء إدخال المحتوى ومعرّف المقال" });
+    return res.status(400).json({ message: "Please provide content and post ID" });
 
   try {
     await db
@@ -28,14 +28,14 @@ router.post("/", verifyToken, async (req, res) => {
         "INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)",
         [post_id, req.user.id, content]
       );
-    res.status(201).json({ message: "تم إضافة التعليق ✅" });
+    res.status(201).json({ message: "Comment added ✅" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "حدث خطأ أثناء إضافة التعليق" });
+    res.status(500).json({ message: "Error occurred while adding the comment" });
   }
 });
 
-// 🟡 عرض كل التعليقات لمقال معين
+// 🟡 Get all comments for a specific post
 router.get("/:post_id", async (req, res) => {
   const { post_id } = req.params;
   try {
@@ -47,42 +47,42 @@ router.get("/:post_id", async (req, res) => {
       );
     res.json(comments);
   } catch (error) {
-    res.status(500).json({ message: "حدث خطأ أثناء جلب التعليقات" });
+    res.status(500).json({ message: "Error occurred while fetching comments" });
   }
 });
 
-// 🔵 تعديل تعليق
+// 🔵 Edit a comment
 router.put("/:id", verifyToken, async (req, res) => {
   const { id } = req.params;
   const { content } = req.body;
 
   try {
     const [comment] = await db.promise().query("SELECT * FROM comments WHERE id = ?", [id]);
-    if (comment.length === 0) return res.status(404).json({ message: "التعليق غير موجود" });
+    if (comment.length === 0) return res.status(404).json({ message: "Comment not found" });
     if (comment[0].user_id !== req.user.id)
-      return res.status(403).json({ message: "ليس لديك صلاحية التعديل" });
+      return res.status(403).json({ message: "You do not have permission to edit" });
 
     await db.promise().query("UPDATE comments SET content = ? WHERE id = ?", [content, id]);
-    res.json({ message: "تم تعديل التعليق ✅" });
+    res.json({ message: "Comment updated ✅" });
   } catch (error) {
-    res.status(500).json({ message: "حدث خطأ أثناء التعديل" });
+    res.status(500).json({ message: "Error occurred while updating" });
   }
 });
 
-// 🔴 حذف تعليق
+// 🔴 Delete a comment
 router.delete("/:id", verifyToken, async (req, res) => {
   const { id } = req.params;
 
   try {
     const [comment] = await db.promise().query("SELECT * FROM comments WHERE id = ?", [id]);
-    if (comment.length === 0) return res.status(404).json({ message: "التعليق غير موجود" });
+    if (comment.length === 0) return res.status(404).json({ message: "Comment not found" });
     if (comment[0].user_id !== req.user.id)
-      return res.status(403).json({ message: "ليس لديك صلاحية الحذف" });
+      return res.status(403).json({ message: "You do not have permission to delete" });
 
     await db.promise().query("DELETE FROM comments WHERE id = ?", [id]);
-    res.json({ message: "تم حذف التعليق 🗑️" });
+    res.json({ message: "Comment deleted 🗑️" });
   } catch (error) {
-    res.status(500).json({ message: "حدث خطأ أثناء الحذف" });
+    res.status(500).json({ message: "Error occurred while deleting" });
   }
 });
 

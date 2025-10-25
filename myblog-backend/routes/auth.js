@@ -4,12 +4,12 @@ const db = require("../db");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-// ✅ تسجيل مستخدم جديد
+// ✅ Register a new user
 router.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
 
   if (!username || !email || !password)
-    return res.status(400).json({ message: "الرجاء إدخال جميع المعلومات" });
+    return res.status(400).json({ message: "Please provide all required information" });
 
   try {
     const [user] = await db
@@ -17,7 +17,7 @@ router.post("/register", async (req, res) => {
       .query("SELECT * FROM users WHERE email = ?", [email]);
 
     if (user.length > 0)
-      return res.status(400).json({ message: "هذا البريد مستخدم بالفعل" });
+      return res.status(400).json({ message: "This email is already in use" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -29,14 +29,14 @@ router.post("/register", async (req, res) => {
         hashedPassword,
       ]);
 
-    res.status(201).json({ message: "تم إنشاء الحساب بنجاح 🎉" });
+    res.status(201).json({ message: "Account created successfully 🎉" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "حدث خطأ في السيرفر" });
+    res.status(500).json({ message: "Server error occurred" });
   }
 });
 
-// ✅ تسجيل الدخول
+// ✅ Login
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -46,12 +46,12 @@ router.post("/login", async (req, res) => {
       .query("SELECT * FROM users WHERE email = ?", [email]);
 
     if (user.length === 0)
-      return res.status(404).json({ message: "البريد غير مسجل" });
+      return res.status(404).json({ message: "Email not registered" });
 
     const validPassword = await bcrypt.compare(password, user[0].password);
 
     if (!validPassword)
-      return res.status(401).json({ message: "كلمة المرور غير صحيحة" });
+      return res.status(401).json({ message: "Incorrect password" });
 
     const token = jwt.sign(
       { id: user[0].id, username: user[0].username },
@@ -60,13 +60,13 @@ router.post("/login", async (req, res) => {
     );
 
     res.status(200).json({
-      message: "تم تسجيل الدخول بنجاح ✅",
+      message: "Logged in successfully ✅",
       token,
       user: { id: user[0].id, username: user[0].username },
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "حدث خطأ في السيرفر" });
+    res.status(500).json({ message: "Server error occurred" });
   }
 });
 

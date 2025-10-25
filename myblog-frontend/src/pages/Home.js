@@ -33,7 +33,7 @@ function Home() {
               <h2>{post.title}</h2>
             </Link>
             <p>{post.content.substring(0, 100)}...</p>
-            {/* استخدم أي حقل موجود للاسم، fallback إلى "Unknown" */}
+            {/* Use any available field for author, fallback to "Unknown" */}
             <small>By {post.author || post.username || "Unknown"}</small>
           </div>
         ))
