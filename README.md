@@ -1,29 +1,29 @@
-# Projet MyBlog
+# MyBlog Project
 
-## Description du projet
-MyBlog est une application web complète avec un **frontend** et un **backend**.  
-Le projet sert d'exemple pour un blog personnel ou une plateforme de contenu.
+## Project Description
+MyBlog is a full web application with a **frontend** and a **backend**.  
+The project serves as an example for a personal blog or a content platform.
 
-## Fonctionnalités principales
-- Gestion des articles (création, lecture, mise à jour, suppression)  
-- Authentification des utilisateurs  
-- API backend pour communication avec le frontend  
-- Interface utilisateur responsive et intuitive
+## Main Features
+- Article management (create, read, update, delete)  
+- User authentication  
+- Backend API for communication with the frontend  
+- Responsive and intuitive user interface
 
-## Structure du projet
-- `myblog-frontend/` : interface utilisateur  
-- `myblog-backend/` : serveur et API
+## Project Structure
+- `myblog-frontend/` : user interface  
+- `myblog-backend/` : server and API
 
-
-## Installation et exécution
-1. Pour le frontend :
+## Installation and Running
+1. For the frontend:
+   
 ```bash
 cd myblog-frontend
 npm install
 npm start
 
-2. Pour le backend :
+2. For the backend:
+
 cd myblog-backend
 npm install
 npm start
-
